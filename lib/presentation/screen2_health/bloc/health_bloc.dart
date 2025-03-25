@@ -4,20 +4,25 @@ import 'health_state.dart';
 import '../../../data/local/hive_service.dart';
 
 class HealthBloc extends Bloc<HealthEvent, HealthState> {
+  static const String healthBoxName = 'healthBox';
+
   final HiveService hiveService;
 
   HealthBloc(this.hiveService)
-      : super(HealthState(steps: 0, water: 0)) {
-    on<LoadHealth>((event, emit) async {
-      final steps = await hiveService.getData(HiveService.healthBoxName, 'steps') ?? 0;
-      final water = await hiveService.getData(HiveService.healthBoxName, 'water') ?? 0;
-      emit(HealthState(steps: steps, water: water));
-    });
+      : super(const HealthState(steps: 0, water: 0)) {
+    on<LoadHealth>(_onLoadHealth);
+    on<UpdateHealth>(_onUpdateHealth);
+  }
 
-    on<UpdateHealth>((event, emit) async {
-      await hiveService.storeData(HiveService.healthBoxName, 'steps', event.steps);
-      await hiveService.storeData(HiveService.healthBoxName, 'water', event.water);
-      emit(HealthState(steps: event.steps, water: event.water));
-    });
+  Future<void> _onLoadHealth(LoadHealth event, Emitter<HealthState> emit) async {
+    final steps = await hiveService.getData(healthBoxName, 'steps') ?? 0;
+    final water = await hiveService.getData(healthBoxName, 'water') ?? 0;
+    emit(HealthState(steps: steps, water: water));
+  }
+
+  Future<void> _onUpdateHealth(UpdateHealth event, Emitter<HealthState> emit) async {
+    await hiveService.storeData(healthBoxName, 'steps', event.steps);
+    await hiveService.storeData(healthBoxName, 'water', event.water);
+    emit(HealthState(steps: event.steps, water: event.water));
   }
 }

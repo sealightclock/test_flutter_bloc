@@ -11,11 +11,7 @@ class BottomNavBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) {
-        if (index == 0) {
-          context.go('/mood');
-        } else {
-          context.go('/health');
-        }
+        context.go(index == 0 ? '/mood' : '/health');
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.emoji_emotions), label: 'Mood'),

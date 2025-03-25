@@ -2,7 +2,7 @@ class HealthState {
   final int steps;
   final int water;
 
-  HealthState({required this.steps, required this.water});
+  const HealthState({required this.steps, required this.water});
 
   HealthState copyWith({int? steps, int? water}) {
     return HealthState(

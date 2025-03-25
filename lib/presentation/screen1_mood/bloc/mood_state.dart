@@ -2,7 +2,7 @@ class MoodState {
   final String mood;
   final String note;
 
-  MoodState({required this.mood, required this.note});
+  const MoodState({required this.mood, required this.note});
 
   MoodState copyWith({String? mood, String? note}) {
     return MoodState(

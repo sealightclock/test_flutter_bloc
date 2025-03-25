@@ -16,42 +16,73 @@ class HealthScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: const Text('Health Tracker')),
         bottomNavigationBar: const BottomNavBar(currentIndex: 1),
-        body: BlocBuilder<HealthBloc, HealthState>(
-          builder: (context, state) {
-            final stepController = TextEditingController(text: state.steps.toString());
-            final waterController = TextEditingController(text: state.water.toString());
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: stepController,
-                    decoration: const InputDecoration(labelText: 'Steps'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: waterController,
-                    decoration: const InputDecoration(labelText: 'Water Intake (ml)'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<HealthBloc>().add(UpdateHealth(
-                        steps: int.tryParse(stepController.text) ?? 0,
-                        water: int.tryParse(waterController.text) ?? 0,
-                      ));
-                    },
-                    child: const Text('Save'),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+        body: const _HealthView(),
       ),
+    );
+  }
+}
+
+class _HealthView extends StatefulWidget {
+  const _HealthView();
+
+  @override
+  State<_HealthView> createState() => _HealthViewState();
+}
+
+class _HealthViewState extends State<_HealthView> {
+  late final TextEditingController _stepsController;
+  late final TextEditingController _waterController;
+
+  @override
+  void initState() {
+    super.initState();
+    _stepsController = TextEditingController();
+    _waterController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _stepsController.dispose();
+    _waterController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HealthBloc, HealthState>(
+      builder: (context, state) {
+        _stepsController.text = state.steps.toString();
+        _waterController.text = state.water.toString();
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                controller: _stepsController,
+                decoration: const InputDecoration(labelText: 'Steps'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _waterController,
+                decoration: const InputDecoration(labelText: 'Water Intake (ml)'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<HealthBloc>().add(UpdateHealth(
+                    steps: int.tryParse(_stepsController.text) ?? 0,
+                    water: int.tryParse(_waterController.text) ?? 0,
+                  ));
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
