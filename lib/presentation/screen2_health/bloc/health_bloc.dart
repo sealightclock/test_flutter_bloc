@@ -1,11 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/local/hive_service.dart';
+import '../../../domain/models/health_entry.dart';
 import 'health_event.dart';
 import 'health_state.dart';
-import '../../../data/local/hive_service.dart';
 
 class HealthBloc extends Bloc<HealthEvent, HealthState> {
-  static const String healthBoxName = 'healthBox';
-
   final HiveService hiveService;
 
   HealthBloc(this.hiveService)
@@ -15,14 +14,16 @@ class HealthBloc extends Bloc<HealthEvent, HealthState> {
   }
 
   Future<void> _onLoadHealth(LoadHealth event, Emitter<HealthState> emit) async {
-    final steps = await hiveService.getData(healthBoxName, 'steps') ?? 0;
-    final water = await hiveService.getData(healthBoxName, 'water') ?? 0;
-    emit(HealthState(steps: steps, water: water));
+    final entry = await hiveService.getHealthEntry();
+    emit(HealthState(
+      steps: entry?.steps ?? 0,
+      water: entry?.water ?? 0,
+    ));
   }
 
   Future<void> _onUpdateHealth(UpdateHealth event, Emitter<HealthState> emit) async {
-    await hiveService.storeData(healthBoxName, 'steps', event.steps);
-    await hiveService.storeData(healthBoxName, 'water', event.water);
+    final entry = HealthEntry(steps: event.steps, water: event.water);
+    await hiveService.storeHealthEntry(entry);
     emit(HealthState(steps: event.steps, water: event.water));
   }
 }

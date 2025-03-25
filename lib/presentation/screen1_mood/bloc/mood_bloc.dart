@@ -1,11 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../data/local/hive_service.dart';
+import '../../../domain/models/mood_entry.dart';
 import 'mood_event.dart';
 import 'mood_state.dart';
-import '../../../data/local/hive_service.dart';
 
 class MoodBloc extends Bloc<MoodEvent, MoodState> {
-  static const String moodBoxName = 'moodBox';
-
   final HiveService hiveService;
 
   MoodBloc(this.hiveService)
@@ -15,14 +14,16 @@ class MoodBloc extends Bloc<MoodEvent, MoodState> {
   }
 
   Future<void> _onLoadMood(LoadMood event, Emitter<MoodState> emit) async {
-    final mood = await hiveService.getData(moodBoxName, 'mood') ?? 'Happy';
-    final note = await hiveService.getData(moodBoxName, 'note') ?? 'Feeling good!';
-    emit(MoodState(mood: mood, note: note));
+    final entry = await hiveService.getMoodEntry();
+    emit(MoodState(
+      mood: entry?.mood ?? 'Happy',
+      note: entry?.note ?? 'Feeling good!',
+    ));
   }
 
   Future<void> _onUpdateMood(UpdateMood event, Emitter<MoodState> emit) async {
-    await hiveService.storeData(moodBoxName, 'mood', event.mood);
-    await hiveService.storeData(moodBoxName, 'note', event.note);
+    final entry = MoodEntry(mood: event.mood, note: event.note);
+    await hiveService.storeMoodEntry(entry);
     emit(MoodState(mood: event.mood, note: event.note));
   }
 }
