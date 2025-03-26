@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../data/local/health/health_hive_service.dart';
+import '../widget/bottom_nav_bar.dart';
 import 'bloc/health_bloc.dart';
 import 'bloc/health_event.dart';
 import 'bloc/health_state.dart';
-import '../../data/local/hive_service.dart';
-import '../widget/bottom_nav_bar.dart';
 
 class HealthScreen extends StatelessWidget {
   const HealthScreen({super.key});
@@ -12,7 +13,7 @@ class HealthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HealthBloc(HiveService())..add(LoadHealth()),
+      create: (_) => HealthBloc(HealthHiveService())..add(LoadHealth()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Health Tracker')),
         bottomNavigationBar: const BottomNavBar(currentIndex: 1),

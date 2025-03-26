@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../data/local/mood/mood_hive_service.dart';
+import '../widget/bottom_nav_bar.dart';
 import 'bloc/mood_bloc.dart';
 import 'bloc/mood_event.dart';
 import 'bloc/mood_state.dart';
-import '../../data/local/hive_service.dart';
-import '../widget/bottom_nav_bar.dart';
 
 class MoodScreen extends StatelessWidget {
   const MoodScreen({super.key});
@@ -12,7 +13,7 @@ class MoodScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => MoodBloc(HiveService())..add(LoadMood()),
+      create: (_) => MoodBloc(MoodHiveService())..add(LoadMood()),
       child: Scaffold(
         appBar: AppBar(title: const Text('Mood Tracker')),
         bottomNavigationBar: const BottomNavBar(currentIndex: 0),
